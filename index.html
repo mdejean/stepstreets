@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <style>
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+html, body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font: menu;
+    vertical-align: top;
+}
+#map {
+    flex: 1;
+}
+
+.tiles {
+    filter: saturate(70%);
+}
+
+#me {
+    float: right;
+}
+
+.label {
+    background-color: rgba(255, 255, 255, 0.75);
+    font: menu;
+    font-weight: bold;
+}
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map"></div>
+        <div>
+         <div id="me"><a href="https://mdejean.github.io">i need a job</a></div>
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="data/lion_0.js"></script>
+        <script>
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:18, minZoom:1
+        })
+        // add an OpenStreetMap tile layer
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            className: 'tiles'
+        }).addTo(map);
+        var hash = new L.Hash(map);
+        map.attributionControl.addAttribution('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a>');
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
+        }
+
+        function style_lion_0_0() {
+            return {
+                pane: 'pane_lion_0',
+                color: 'red',
+                dashArray: '1 5',
+                weight: 3
+            }
+        }
+        function do_label(feature, layer) {
+            layer.bindTooltip(feature.properties['Street'], {className: 'label', permanent: true});
+            layer.on('add', () => layer.closeTooltip());
+            layer.on('mouseover', (ev) => {
+                layer.openTooltip();
+                let c = L.circleMarker(ev.latlng, {radius: 100, color: 'transparent', stroke: 'transparent'});
+                map.addLayer(c);
+                c.on('mouseout', (ev) => {layer.closeTooltip(); map.removeLayer(c)});
+            });
+        }
+        map.createPane('pane_lion_0');
+        map.getPane('pane_lion_0').style.zIndex = 400;
+        map.getPane('pane_lion_0').style['mix-blend-mode'] = 'normal';
+        var layer_lion_0 = new L.geoJson(json_lion_0, {
+            attribution: '',
+            pane: 'pane_lion_0',
+            onEachFeature: do_label,
+            style: style_lion_0_0,
+        });
+        bounds_group.addLayer(layer_lion_0);
+        map.addLayer(layer_lion_0);
+        </script>
+    </body>
+</html>
